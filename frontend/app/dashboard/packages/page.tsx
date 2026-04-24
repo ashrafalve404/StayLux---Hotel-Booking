@@ -28,7 +28,7 @@ export default function DashboardPackagesPage() {
   }, []);
 
   const loadData = (ownerId: number) => {
-    fetch(`http://localhost:3001/hotels?ownerId=${ownerId}`)
+    fetch(`/api/hotels?ownerId=${ownerId}`)
       .then((res) => res.json())
       .then(async (hotels) => {
         if (!hotels || hotels.length === 0) {
@@ -37,7 +37,7 @@ export default function DashboardPackagesPage() {
         }
         
         const hotelId = hotels[0].id;
-        const pkgData = await fetch(`http://localhost:3001/packages?hotelId=${hotelId}`).then((r) => r.json());
+        const pkgData = await fetch(`/api/packages?hotelId=${hotelId}`).then((r) => r.json());
         setPackages(pkgData || []);
         setLoading(false);
       })
@@ -51,7 +51,7 @@ export default function DashboardPackagesPage() {
     const token = localStorage.getItem('token');
     
     try {
-      const res = await fetch(`http://localhost:3001/packages/${id}`, {
+      const res = await fetch(`/api/packages/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });

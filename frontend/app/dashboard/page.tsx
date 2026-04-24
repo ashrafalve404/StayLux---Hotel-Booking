@@ -21,7 +21,7 @@ export default function DashboardPage() {
     if (!userData.id) return;
 
     Promise.all([
-      fetch(`http://localhost:3001/hotels?ownerId=${userData.id}`).then((res) => res.json()),
+      fetch(`/api/hotels?ownerId=${userData.id}`).then((res) => res.json()),
     ])
       .then(async ([hotelsData]) => {
         const hotels = hotelsData || [];
@@ -42,7 +42,7 @@ export default function DashboardPage() {
         const allBookings: any[] = [];
         
         for (const hotelId of hotelIds) {
-          const bookings = await fetch(`http://localhost:3001/bookings?hotelId=${hotelId}`).then(r => r.json());
+          const bookings = await fetch(`/api/bookings?hotelId=${hotelId}`).then(r => r.json());
           if (bookings) allBookings.push(...bookings);
         }
         

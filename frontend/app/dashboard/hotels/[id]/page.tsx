@@ -45,8 +45,8 @@ export default function HotelDetailPage() {
     if (!params.id) return;
 
     Promise.all([
-      fetch(`http://localhost:3001/hotels/${params.id}`).then((res) => res.json()),
-      fetch(`http://localhost:3001/hotels/${params.id}/rooms`).then((res) => res.ok ? res.json() : []),
+      fetch(`/api/hotels/${params.id}`).then((res) => res.json()),
+      fetch(`/api/hotels/${params.id}/rooms`).then((res) => res.ok ? res.json() : []),
     ])
       .then(([hotelData, roomsData]) => {
         setHotel(hotelData);

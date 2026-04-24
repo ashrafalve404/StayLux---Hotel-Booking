@@ -55,8 +55,8 @@ export default function HotelDetailPage() {
     if (!params.id) return;
     
     Promise.all([
-      fetch(`http://localhost:3001/hotels/${params.id}`).then((res) => res.ok ? res.json() : null),
-      fetch(`http://localhost:3001/hotels/${params.id}/rooms`).then((res) => res.ok ? res.json() : []),
+      fetch(`/api/hotels/${params.id}`).then((res) => res.ok ? res.json() : null),
+      fetch(`/api/hotels/${params.id}/rooms`).then((res) => res.ok ? res.json() : []),
     ])
       .then(([hotelData, roomsData]) => {
         if (hotelData) {
@@ -110,7 +110,7 @@ export default function HotelDetailPage() {
     const totalAmount = pricePerNight * nights;
 
     try {
-      const res = await fetch('http://localhost:3001/bookings', {
+      const res = await fetch('/api/bookings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

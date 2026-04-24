@@ -23,7 +23,7 @@ export default function NewHotelPage() {
 
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:3001/hotels', {
+      const res = await fetch('/api/hotels', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

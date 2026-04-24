@@ -37,7 +37,7 @@ export default function PackageDetailPage() {
   useEffect(() => {
     if (!params.id) return;
     
-    fetch(`http://localhost:3001/packages/${params.id}`)
+    fetch(`/api/packages/${params.id}`)
       .then((res) => {
         if (!res.ok) {
           setError('Package not found');
@@ -70,7 +70,7 @@ export default function PackageDetailPage() {
     setBookingLoading(true);
 
     try {
-      const res = await fetch('http://localhost:3001/bookings', {
+      const res = await fetch('/api/bookings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

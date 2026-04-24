@@ -27,7 +27,7 @@ export default function PackagesSection() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:3001/packages')
+    fetch('/api/packages')
       .then((res) => res.json())
       .then((data) => {
         setPackages((data || []).slice(0, 4));

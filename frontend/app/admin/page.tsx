@@ -57,9 +57,9 @@ export default function AdminPage() {
     
     try {
       const [usersRes, bookingsRes, hotelsRes] = await Promise.all([
-        fetch('http://localhost:3001/users', { headers: authHeaders }),
-        fetch('http://localhost:3001/bookings', { headers: authHeaders }),
-        fetch('http://localhost:3001/hotels', { headers: authHeaders }),
+        fetch('/api/users', { headers: authHeaders }),
+        fetch('/api/bookings', { headers: authHeaders }),
+        fetch('/api/hotels', { headers: authHeaders }),
       ]);
       
       const usersData = usersRes.ok ? await usersRes.json() : [];
@@ -95,7 +95,7 @@ export default function AdminPage() {
     const token = localStorage.getItem('token');
     
     try {
-      const res = await fetch(`http://localhost:3001/${type}/${id}`, {
+      const res = await fetch(`/api/${type}/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -115,7 +115,7 @@ export default function AdminPage() {
   const handleRoleUpdate = async (userId: number, newRole: string) => {
     const token = localStorage.getItem('token');
     try {
-      const res = await fetch(`http://localhost:3001/users/${userId}`, {
+      const res = await fetch(`/api/users/${userId}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -134,7 +134,7 @@ export default function AdminPage() {
   const handleStatusUpdate = async (bookingId: number, status: string) => {
     const token = localStorage.getItem('token');
     try {
-      const res = await fetch(`http://localhost:3001/bookings/${bookingId}`, {
+      const res = await fetch(`/api/bookings/${bookingId}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',

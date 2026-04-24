@@ -28,7 +28,7 @@ export default function FeaturedHotels() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:3001/hotels')
+    fetch('/api/hotels')
       .then((res) => res.json())
       .then((data) => {
         setHotels(data?.slice(0, 6) || []);

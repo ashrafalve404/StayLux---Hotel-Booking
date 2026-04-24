@@ -42,7 +42,7 @@ export default function ProfilePage() {
     const parsedUser = JSON.parse(userData);
     setUser(parsedUser);
 
-    fetch(`http://localhost:3001/bookings?userId=${parsedUser.id}`, {
+    fetch(`/api/bookings?userId=${parsedUser.id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())

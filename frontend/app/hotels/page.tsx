@@ -37,7 +37,7 @@ function HotelsContent() {
   const [searchTerm, setSearchTerm] = useState(initialSearch);
 
   useEffect(() => {
-    fetch('http://localhost:3001/hotels')
+    fetch('/api/hotels')
       .then((res) => res.json())
       .then((data) => {
         setHotels(data || []);

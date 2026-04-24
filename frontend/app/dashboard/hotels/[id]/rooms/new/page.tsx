@@ -23,7 +23,7 @@ export default function NewRoomPage() {
     const token = localStorage.getItem('token');
     
     try {
-      const res = await fetch(`http://localhost:3001/hotels/${params.id}/rooms`, {
+      const res = await fetch(`/api/hotels/${params.id}/rooms`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

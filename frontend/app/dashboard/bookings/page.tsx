@@ -31,7 +31,7 @@ export default function DashboardBookingsPage() {
 
   const loadBookings = async (ownerId: number) => {
     try {
-      const hotelsRes = await fetch(`http://localhost:3001/hotels?ownerId=${ownerId}`);
+      const hotelsRes = await fetch(`/api/hotels?ownerId=${ownerId}`);
       const hotels = await hotelsRes.json();
       
       if (!hotels || hotels.length === 0) {
@@ -42,7 +42,7 @@ export default function DashboardBookingsPage() {
       const allBookings: Booking[] = [];
       
       for (const hotel of hotels) {
-        const bookingsRes = await fetch(`http://localhost:3001/bookings?hotelId=${hotel.id}`);
+        const bookingsRes = await fetch(`/api/bookings?hotelId=${hotel.id}`);
         const hotelBookings = await bookingsRes.json();
         if (hotelBookings) allBookings.push(...hotelBookings);
       }
@@ -61,7 +61,7 @@ export default function DashboardBookingsPage() {
     setUpdating(bookingId);
     
     try {
-      const res = await fetch(`http://localhost:3001/bookings/${bookingId}`, {
+      const res = await fetch(`/api/bookings/${bookingId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

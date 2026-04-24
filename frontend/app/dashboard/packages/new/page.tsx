@@ -41,7 +41,7 @@ export default function NewPackagePage() {
 
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:3001/packages', {
+      const res = await fetch('/api/packages', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

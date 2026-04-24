@@ -30,7 +30,7 @@ export default function PackagesPage() {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:3001/packages')
+    fetch('/api/packages')
       .then((res) => res.json())
       .then((data) => {
         setPackages(data || []);

@@ -33,7 +33,7 @@ export default function PackageDetailPage() {
     const id = params.id;
     if (!id) return;
     
-    fetch(`http://localhost:3001/packages/${id}`)
+    fetch(`/api/packages/${id}`)
       .then((res) => {
         if (!res.ok) {
           setError('Package not found');
@@ -66,7 +66,7 @@ export default function PackageDetailPage() {
 
     setSaving(true);
     try {
-      const res = await fetch(`http://localhost:3001/packages/${params.id}`, {
+      const res = await fetch(`/api/packages/${params.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -37,7 +37,7 @@ export default function EditHotelPage() {
   useEffect(() => {
     if (!params.id) return;
     
-    fetch(`http://localhost:3001/hotels/${params.id}`)
+    fetch(`/api/hotels/${params.id}`)
       .then((res) => res.ok ? res.json() : null)
       .then((data) => {
         if (data) setForm(data);
@@ -72,7 +72,7 @@ export default function EditHotelPage() {
     };
     
     try {
-      const res = await fetch(`http://localhost:3001/hotels/${params.id}`, {
+      const res = await fetch(`/api/hotels/${params.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -39,7 +39,7 @@ export default function DashboardHotelsPage() {
   }, []);
 
   const loadHotels = (ownerId: number) => {
-    fetch(`http://localhost:3001/hotels?ownerId=${ownerId}`)
+    fetch(`/api/hotels?ownerId=${ownerId}`)
       .then((res) => res.json())
       .then((data) => {
         setHotels(data || []);
@@ -57,7 +57,7 @@ export default function DashboardHotelsPage() {
     const token = localStorage.getItem('token');
     
     try {
-      const res = await fetch(`http://localhost:3001/hotels/${id}`, {
+      const res = await fetch(`/api/hotels/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
