@@ -13,9 +13,6 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [nameFocused, setNameFocused] = useState(false);
-  const [emailFocused, setEmailFocused] = useState(false);
-  const [passwordFocused, setPasswordFocused] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -78,8 +75,8 @@ export default function RegisterPage() {
               </div>
             )}
 
-            <div className={`relative transition-all duration-300 ${nameFocused || name ? 'ring-2 ring-orange-500 rounded-xl p-1' : ''} bg-white rounded-xl`}>
-              <label htmlFor="name" className="block text-xs font-medium text-slate-600 mb-1 ml-2 pt-1">
+            <div>
+              <label htmlFor="name" className="block text-xs font-medium text-slate-600 mb-1 ml-1">
                 Full Name
               </label>
               <input
@@ -87,16 +84,14 @@ export default function RegisterPage() {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                onFocus={() => setNameFocused(true)}
-                onBlur={() => setNameFocused(false)}
-                className="w-full px-4 py-2 bg-transparent border-0 text-sm focus:ring-0 outline-none"
+                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-orange-500 focus:outline-none transition-all"
                 placeholder="John Doe"
                 required
               />
             </div>
 
-            <div className={`relative transition-all duration-300 ${emailFocused || email ? 'ring-2 ring-orange-500 rounded-xl p-1' : ''} bg-white rounded-xl`}>
-              <label htmlFor="email" className="block text-xs font-medium text-slate-600 mb-1 ml-2 pt-1">
+            <div>
+              <label htmlFor="email" className="block text-xs font-medium text-slate-600 mb-1 ml-1">
                 Email Address
               </label>
               <input
@@ -104,16 +99,14 @@ export default function RegisterPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                onFocus={() => setEmailFocused(true)}
-                onBlur={() => setEmailFocused(false)}
-                className="w-full px-4 py-2 bg-transparent border-0 text-sm focus:ring-0 outline-none"
+                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-orange-500 focus:outline-none transition-all"
                 placeholder="you@example.com"
                 required
               />
             </div>
 
-            <div className={`relative transition-all duration-300 ${passwordFocused || password ? 'ring-2 ring-orange-500 rounded-xl p-1' : ''} bg-white rounded-xl`}>
-              <label htmlFor="password" className="block text-xs font-medium text-slate-600 mb-1 ml-2 pt-1">
+            <div>
+              <label htmlFor="password" className="block text-xs font-medium text-slate-600 mb-1 ml-1">
                 Password
               </label>
               <div className="relative">
@@ -122,9 +115,7 @@ export default function RegisterPage() {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  onFocus={() => setPasswordFocused(true)}
-                  onBlur={() => setPasswordFocused(false)}
-                  className="w-full px-4 py-2 bg-transparent border-0 text-sm focus:ring-0 outline-none pr-12"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-orange-500 focus:outline-none transition-all pr-12"
                   placeholder="Min 6 characters"
                   required
                   minLength={6}
@@ -157,7 +148,7 @@ export default function RegisterPage() {
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-0 focus:bg-white focus:border-orange-500 outline-none transition-all"
+                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-orange-500 focus:outline-none transition-all"
                 placeholder="+1 234 567 8900"
               />
             </div>
@@ -203,17 +194,9 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-3 rounded-xl text-sm font-medium hover:from-orange-600 hover:to-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-3 rounded-xl text-sm font-medium hover:from-orange-600 hover:to-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl"
             >
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Creating account...
-                </span>
-              ) : 'Create Account'}
+              {loading ? 'Creating account...' : 'Create Account'}
             </button>
           </form>
 

@@ -11,7 +11,6 @@ export const typeOrmConfig: DataSourceOptions = databaseUrl?.startsWith('postgre
       migrations: [__dirname + '/../migrations/*.ts'],
       synchronize: true,
       logging: false,
-      ssl: { rejectUnauthorized: false },
     }
   : {
       type: 'sqlite',

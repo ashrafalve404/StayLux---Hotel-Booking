@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, IsOptional, IsNumberString } from 'class-validator';
 
 export class CreateHotelDto {
   @IsString()
@@ -21,19 +21,24 @@ export class CreateHotelDto {
   @IsNotEmpty()
   country: string;
 
-  @IsNumber()
+  @IsOptional()
   pricePerNight: number;
 
-  @IsNumber()
-  rating: number;
+  @IsOptional()
+  rating?: number;
 
-  images?: string[];
+  @IsOptional()
+  reviewCount?: number;
 
-  @IsString()
+  @IsOptional()
+  images: string[];
+
+  @IsOptional()
   amenities?: string;
 
-  @IsString()
+  @IsOptional()
   policies?: string;
 
+  @IsOptional()
   ownerId: number;
 }

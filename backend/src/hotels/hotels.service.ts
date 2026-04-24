@@ -1,9 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { Hotel } from './entities/hotel.entity';
 import { CreateHotelDto } from './dtos/create-hotel.dto';
 import { Room } from './entities/room.entity';
+import { Booking } from '../bookings/entities/booking.entity';
+import { Package } from '../packages/entities/package.entity';
 
 @Injectable()
 export class HotelsService {
@@ -15,7 +17,13 @@ export class HotelsService {
   ) {}
 
   async create(createHotelDto: CreateHotelDto): Promise<Hotel> {
-    const hotel = this.hotelsRepository.create(createHotelDto);
+    const hotel = this.hotelsRepository.create({
+      ...createHotelDto,
+      rating: createHotelDto.rating || 4.5,
+      reviewCount: createHotelDto.reviewCount || 0,
+      images: createHotelDto.images || [],
+      isActive: true,
+    });
     return this.hotelsRepository.save(hotel);
   }
 
@@ -49,6 +57,16 @@ export class HotelsService {
   }
 
   async remove(id: number): Promise<void> {
+    const bookings = await this.hotelsRepository.manager.find(Booking, {
+      where: { hotelId: id },
+    });
+    if (bookings.length > 0) {
+      throw new BadRequestException('Cannot delete hotel with existing bookings');
+    }
+    // Delete rooms first
+    await this.roomsRepository.delete({ hotelId: id });
+    // Delete packages
+    await this.hotelsRepository.manager.delete(Package, { hotelId: id });
     const result = await this.hotelsRepository.delete(id);
     if (result.affected === 0) {
       throw new NotFoundException(`Hotel with id ${id} not found`);

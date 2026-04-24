@@ -32,7 +32,7 @@ export class Hotel {
   @Column({ default: 0 })
   reviewCount: number;
 
-  @Column('simple-array', { nullable: true })
+  @Column('simple-array', { nullable: true, default: '' })
   images: string[];
 
   @Column({ default: true })

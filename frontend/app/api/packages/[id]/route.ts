@@ -16,39 +16,52 @@ function getAuthHeaders(request: NextRequest, body?: any) {
     : { 'Content-Type': 'application/json' };
 }
 
-export async function GET(request: NextRequest) {
-  const url = new URL(request.url);
-  const id = url.searchParams.get('id');
-  
-  if (id) {
-    const response = await fetch(`${API_URL}/packages/${id}`, {
-      headers: { 'Content-Type': 'application/json' },
-    });
-    
-    const data = await response.json();
-    return NextResponse.json(data, { status: response.status });
-  }
-  
-  const hotelId = url.searchParams.get('hotelId');
-  let endpoint = '/packages';
-  if (hotelId) endpoint += `?hotelId=${hotelId}`;
-  
-  const headers = getAuthHeaders(request);
-  const response = await fetch(`${API_URL}${endpoint}`, { headers });
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const response = await fetch(`${API_URL}/packages/${id}`, {
+    headers: { 'Content-Type': 'application/json' },
+  });
   
   const data = await response.json();
   return NextResponse.json(data, { status: response.status });
 }
 
-export async function POST(request: NextRequest) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const headers = getAuthHeaders(request, body);
     
-    const res = await fetch(`${API_URL}/packages`, {
-      method: 'POST',
+    const res = await fetch(`${API_URL}/packages/${id}`, {
+      method: 'PUT',
       headers,
       body: JSON.stringify(body),
+    });
+    
+    const data = await res.json();
+    return NextResponse.json(data, { status: res.status });
+  } catch (error) {
+    return NextResponse.json({ message: 'Invalid request' }, { status: 400 });
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const headers = getAuthHeaders(request);
+    
+    const res = await fetch(`${API_URL}/packages/${id}`, {
+      method: 'DELETE',
+      headers,
     });
     
     const data = await res.json();

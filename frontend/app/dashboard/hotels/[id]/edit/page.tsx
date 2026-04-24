@@ -14,6 +14,7 @@ interface Hotel {
   rating: number;
   amenities: string;
   policies: string;
+  images: string[];
 }
 
 export default function EditHotelPage() {
@@ -21,6 +22,8 @@ export default function EditHotelPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [imagePreview, setImagePreview] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
   const [form, setForm] = useState<Hotel>({
     id: 0,
     name: '',
@@ -32,60 +35,64 @@ export default function EditHotelPage() {
     rating: 0,
     amenities: '',
     policies: '',
+    images: [],
   });
 
   useEffect(() => {
     if (!params.id) return;
     
     fetch(`/api/hotels/${params.id}`)
-      .then((res) => res.ok ? res.json() : null)
+      .then((res) => res.json())
       .then((data) => {
-        if (data) setForm(data);
+        setForm(data);
+        setImagePreview(data.images?.[0] || '');
+        setImageUrl(data.images?.[0] || '');
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {
+        setLoading(false);
+      });
   }, [params.id]);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImagePreview(reader.result as string);
+        setForm({ ...form, images: [reader.result as string] });
+        setImageUrl('');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleUrlChange = (url: string) => {
+    setImageUrl(url);
+    setForm({ ...form, images: [url] });
+    setImagePreview('');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!params.id) return;
-    
     setSaving(true);
-    const token = localStorage.getItem('token');
-    
-    if (!token) {
-      alert('Please login again');
-      setSaving(false);
-      return;
-    }
 
-    const updateData = {
-      name: form.name,
-      description: form.description || '',
-      address: form.address || '',
-      city: form.city,
-      country: form.country,
-      pricePerNight: Number(form.pricePerNight) || 0,
-      rating: Number(form.rating) || 0,
-      amenities: form.amenities || '',
-      policies: form.policies || '',
-    };
-    
     try {
+      const token = localStorage.getItem('token');
       const res = await fetch(`/api/hotels/${params.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(updateData),
+        body: JSON.stringify(form),
       });
-      
+
       if (res.ok) {
         router.push(`/dashboard/hotels/${params.id}`);
       } else {
-        const error = await res.json();
-        alert(error.message || 'Failed to update hotel');
+        const err = await res.json();
+        alert(err.message || 'Failed to update');
       }
     } catch (err) {
       alert('Error updating hotel');
@@ -111,6 +118,31 @@ export default function EditHotelPage() {
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Hotel Image</label>
+            <div className="space-y-2">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+              />
+              <div className="flex items-center gap-2">
+                <span className="text-slate-400">or</span>
+                <input
+                  type="url"
+                  placeholder="Paste image URL..."
+                  value={imageUrl}
+                  onChange={(e) => handleUrlChange(e.target.value)}
+                  className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
+                />
+              </div>
+            </div>
+            {(imagePreview || form.images?.[0]) && (
+              <img src={imagePreview || form.images?.[0]} alt="Hotel" className="mt-2 h-32 object-cover rounded-lg" />
+            )}
+          </div>
+
+          <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Hotel Name</label>
             <input
               type="text"
@@ -122,11 +154,11 @@ export default function EditHotelPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Address</label>
-            <input
-              type="text"
-              value={form.address}
-              onChange={(e) => setForm({ ...form, address: e.target.value })}
+            <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+            <textarea
+              rows={3}
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
               className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
             />
           </div>
@@ -155,60 +187,71 @@ export default function EditHotelPage() {
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Price per Night ($)</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Address</label>
             <input
-              type="number"
-              value={form.pricePerNight}
-              onChange={(e) => setForm({ ...form, pricePerNight: +e.target.value })}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-              required
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
-            <textarea
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
-              rows={4}
+              type="text"
+              value={form.address}
+              onChange={(e) => setForm({ ...form, address: e.target.value })}
               className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
             />
           </div>
-          
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Price per Night ($)</label>
+              <input
+                type="number"
+                value={form.pricePerNight}
+                onChange={(e) => setForm({ ...form, pricePerNight: parseFloat(e.target.value) })}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Rating</label>
+              <input
+                type="number"
+                step="0.1"
+                max="5"
+                value={form.rating}
+                onChange={(e) => setForm({ ...form, rating: parseFloat(e.target.value) })}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              />
+            </div>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Amenities</label>
             <textarea
               value={form.amenities}
               onChange={(e) => setForm({ ...form, amenities: e.target.value })}
-              rows={3}
-              placeholder="WiFi, Pool, Gym..."
               className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              placeholder="Free WiFi, Pool, Gym..."
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Policies</label>
             <textarea
               value={form.policies}
               onChange={(e) => setForm({ ...form, policies: e.target.value })}
-              rows={3}
-              placeholder="Check-in: 2PM, Check-out: 11AM..."
               className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              placeholder="Check-in: 3PM, Check-out: 11AM..."
             />
           </div>
-          
-          <div className="flex gap-3 pt-4">
+
+          <div className="flex gap-4">
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50"
+              className="flex-1 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50"
             >
               {saving ? 'Saving...' : 'Save Changes'}
             </button>
             <button
               type="button"
               onClick={() => router.push(`/dashboard/hotels/${params.id}`)}
-              className="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200"
+              className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200"
             >
               Cancel
             </button>

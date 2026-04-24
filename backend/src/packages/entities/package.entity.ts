@@ -25,7 +25,7 @@ export class Package {
   @Column({ default: true })
   isActive: boolean;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, default: '' })
   image: string;
 
   @ManyToOne(() => Hotel, (hotel) => hotel['packages'])

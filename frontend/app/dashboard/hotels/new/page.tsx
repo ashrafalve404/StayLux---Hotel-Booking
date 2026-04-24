@@ -14,7 +14,30 @@ export default function NewHotelPage() {
     pricePerNight: '',
     rating: '4.5',
     reviewCount: '0',
+    images: [] as string[],
   });
+  const [imagePreview, setImagePreview] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImagePreview(reader.result as string);
+        setForm({ ...form, images: [reader.result as string] });
+        setImageUrl('');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleUrlChange = (url: string) => {
+    setImageUrl(url);
+    setForm({ ...form, images: [url] });
+    setImagePreview('');
+  };
+
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,7 +63,8 @@ export default function NewHotelPage() {
       if (res.ok) {
         router.push('/dashboard/hotels');
       } else {
-        alert('Failed to create hotel');
+        const err = await res.json();
+        alert(err.message || 'Failed to create hotel');
       }
     } catch (err) {
       alert('Error creating hotel');
@@ -57,6 +81,31 @@ export default function NewHotelPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">Hotel Image (optional)</label>
+          <div className="space-y-2">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+            />
+            <div className="flex items-center gap-2">
+              <span className="text-slate-400">or</span>
+              <input
+                type="url"
+                placeholder="Paste image URL..."
+                value={imageUrl}
+                onChange={(e) => handleUrlChange(e.target.value)}
+                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
+              />
+            </div>
+          </div>
+          {(imagePreview || form.images?.[0]) && (
+            <img src={imagePreview || form.images?.[0]} alt="Preview" className="mt-2 h-32 object-cover rounded-lg" />
+          )}
+        </div>
+
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">Hotel Name *</label>
           <input
@@ -128,6 +177,26 @@ export default function NewHotelPage() {
               placeholder="299"
             />
           </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">Amenities</label>
+          <textarea
+            value={form.amenities}
+            onChange={(e) => setForm({ ...form, amenities: e.target.value })}
+            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+            placeholder="Free WiFi, Pool, Gym..."
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">Policies</label>
+          <textarea
+            value={form.policies}
+            onChange={(e) => setForm({ ...form, policies: e.target.value })}
+            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+            placeholder="Check-in: 3PM, Check-out: 11AM..."
+          />
         </div>
 
         <div className="flex gap-4">

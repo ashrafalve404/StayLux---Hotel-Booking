@@ -1,8 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Package } from './entities/package.entity';
 import { CreatePackageDto } from './dtos/create-package.dto';
+import { Booking } from '../bookings/entities/booking.entity';
 
 @Injectable()
 export class PackagesService {
@@ -12,7 +13,11 @@ export class PackagesService {
   ) {}
 
   async create(createPackageDto: CreatePackageDto): Promise<Package> {
-    const pkg = this.packagesRepository.create(createPackageDto);
+    const pkg = this.packagesRepository.create({
+      ...createPackageDto,
+      image: createPackageDto.image || '',
+      isActive: true,
+    });
     return this.packagesRepository.save(pkg);
   }
 
@@ -46,6 +51,12 @@ export class PackagesService {
   }
 
   async remove(id: number): Promise<void> {
+    const bookings = await this.packagesRepository.manager.find(Booking, {
+      where: { packageId: id },
+    });
+    if (bookings.length > 0) {
+      throw new BadRequestException('Cannot delete package with existing bookings');
+    }
     const result = await this.packagesRepository.delete(id);
     if (result.affected === 0) {
       throw new NotFoundException(`Package with id ${id} not found`);

@@ -17,7 +17,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: data.message || 'Login failed' }, { status: res.status });
     }
     
-    return NextResponse.json(data);
+    const response = NextResponse.json(data);
+    response.cookies.set('token', data.access_token, {
+      httpOnly: true,
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7,
+    });
+    
+    return response;
   } catch (error) {
     return NextResponse.json({ message: 'Invalid request' }, { status: 400 });
   }
