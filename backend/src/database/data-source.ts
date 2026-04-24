@@ -1,10 +1,14 @@
 import { DataSourceOptions } from 'typeorm';
+import 'dotenv/config';
 
 export const typeOrmConfig: DataSourceOptions = {
-  type: 'sqlite',
-  database: 'database.sqlite',
+  type: 'postgres',
+  url: process.env.DATABASE_URL,
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-  migrations: [],
+  migrations: [__dirname + '/../migrations/*.ts'],
   synchronize: true,
   logging: false,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 };
