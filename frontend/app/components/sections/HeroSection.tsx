@@ -26,12 +26,6 @@ export default function HeroSection() {
 
       <div className="relative z-10 flex-1 flex flex-col justify-center max-w-6xl mx-auto px-6 py-24">
         <div className="text-center max-w-3xl mx-auto">
-          <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-orange-500/20 border border-orange-400/30 mb-6">
-            <span className="text-sm font-medium text-orange-300">
-              Premium Service Since 2024
-            </span>
-          </div>
-
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
             Discover Your
             <span className="block text-orange-400">

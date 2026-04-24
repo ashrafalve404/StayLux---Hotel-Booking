@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
+import { Search, SlidersHorizontal } from 'lucide-react';
 
 interface Package {
   id: number;
@@ -28,6 +29,12 @@ export default function PackagesPage() {
   const [packages, setPackages] = useState<Package[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  
+  // Filters
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
+  const [duration, setDuration] = useState('');
 
   useEffect(() => {
     fetch('/api/packages')
@@ -39,16 +46,30 @@ export default function PackagesPage() {
       .catch(() => setLoading(false));
   }, []);
 
-  const filteredPackages = packages.filter(pkg => 
-    pkg.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    pkg.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredPackages = packages.filter(pkg => {
+    const matchesSearch = !searchTerm || 
+      pkg.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      pkg.description?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesMinPrice = !minPrice || pkg.price >= parseInt(minPrice);
+    const matchesMaxPrice = !maxPrice || pkg.price <= parseInt(maxPrice);
+    const matchesDuration = !duration || pkg.duration === parseInt(duration);
+    
+    return matchesSearch && matchesMinPrice && matchesMaxPrice && matchesDuration;
+  });
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
     }).format(amount);
+  };
+
+  const clearFilters = () => {
+    setMinPrice('');
+    setMaxPrice('');
+    setDuration('');
+    setSearchTerm('');
   };
 
   return (
@@ -61,15 +82,73 @@ export default function PackagesPage() {
             <p className="text-slate-600 text-sm">All-inclusive deals for your perfect vacation</p>
           </div>
 
-          <div className="mb-5">
-            <input
-              type="text"
-              placeholder="Search packages..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm"
-            />
+          <div className="flex gap-2 mb-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search packages..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-9 pr-3 py-2.5 border border-slate-300 rounded-lg text-sm"
+              />
+            </div>
+            <button 
+              onClick={() => setShowFilters(!showFilters)}
+              className={`px-4 py-2.5 border rounded-lg text-sm font-medium flex items-center gap-2 ${showFilters ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-700 border-slate-300'}`}
+            >
+              <SlidersHorizontal className="w-4 h-4" />
+              Filters
+            </button>
           </div>
+
+          {showFilters && (
+            <div className="bg-white p-4 rounded-lg border border-slate-200 mb-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="text-xs font-medium text-slate-600 mb-1 block">Min Price</label>
+                  <input
+                    type="number"
+                    placeholder="0"
+                    value={minPrice}
+                    onChange={(e) => setMinPrice(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-slate-600 mb-1 block">Max Price</label>
+                  <input
+                    type="number"
+                    placeholder="Any"
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-slate-600 mb-1 block">Duration</label>
+                  <select 
+                    value={duration}
+                    onChange={(e) => setDuration(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                  >
+                    <option value="">Any</option>
+                    <option value="2">2 days</option>
+                    <option value="3">3 days</option>
+                    <option value="4">4 days</option>
+                    <option value="5">5 days</option>
+                    <option value="7">7 days</option>
+                  </select>
+                </div>
+              </div>
+              <button 
+                onClick={clearFilters}
+                className="mt-3 text-sm text-orange-500 hover:text-orange-600"
+              >
+                Clear all filters
+              </button>
+            </div>
+          )}
 
           {loading ? (
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
