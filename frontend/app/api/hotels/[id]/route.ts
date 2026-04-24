@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
-function getAuthHeaders(request: NextRequest, body?: any) {
-  let token = request.cookies.get('token')?.value;
+function getAuthHeaders(request: NextRequest, body?: any): Record<string, string> {
+  let token: string | undefined = request.cookies.get('token')?.value;
   if (!token && body?.token) token = body.token;
   if (!token) {
     const authHeader = request.headers.get('authorization');
@@ -40,7 +40,7 @@ export async function PUT(
     
     const res = await fetch(`${API_URL}/hotels/${id}`, {
       method: 'PUT',
-      headers,
+      headers: headers as any,
       body: JSON.stringify(body),
     });
     
@@ -61,7 +61,7 @@ export async function DELETE(
     
     const res = await fetch(`${API_URL}/hotels/${id}`, {
       method: 'DELETE',
-      headers,
+      headers: headers as any,
     });
     
     const data = await res.json();

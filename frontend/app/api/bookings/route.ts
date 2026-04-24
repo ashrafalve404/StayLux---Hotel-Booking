@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 function getAuthToken(request: NextRequest, body?: any): string | null {
-  let token = request.cookies.get('token')?.value;
+  let token: string | undefined = request.cookies.get('token')?.value;
   if (!token && body?.token) token = body.token;
   if (!token) {
     const authHeader = request.headers.get('authorization');
@@ -11,7 +11,7 @@ function getAuthToken(request: NextRequest, body?: any): string | null {
       token = authHeader.substring(7);
     }
   }
-  return token;
+  return token || null;
 }
 
 export async function GET(request: NextRequest) {
@@ -24,11 +24,14 @@ export async function GET(request: NextRequest) {
   if (hotelId) endpoint += `?hotelId=${hotelId}`;
   
   const token = getAuthToken(request);
-  const headers = token 
+  const authHeaders: Record<string, string> = token 
     ? { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
     : { 'Content-Type': 'application/json' };
   
-  const response = await fetch(`${API_URL}${endpoint}`, { headers });
+  const response = await fetch(`${API_URL}${endpoint}`, { 
+    headers: authHeaders as any 
+  });
+  
   const data = await response.json();
   return NextResponse.json(data, { status: response.status });
 }
@@ -37,13 +40,13 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const token = getAuthToken(request, body);
-    const headers = token 
+    const authHeaders: Record<string, string> = token 
       ? { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
       : { 'Content-Type': 'application/json' };
     
     const res = await fetch(`${API_URL}/bookings`, {
       method: 'POST',
-      headers,
+      headers: authHeaders as any,
       body: JSON.stringify(body),
     });
     

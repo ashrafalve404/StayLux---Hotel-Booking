@@ -15,6 +15,8 @@ export default function NewHotelPage() {
     rating: '4.5',
     reviewCount: '0',
     images: [] as string[],
+    amenities: '',
+    policies: '',
   });
   const [imagePreview, setImagePreview] = useState('');
   const [imageUrl, setImageUrl] = useState('');

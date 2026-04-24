@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
-function getAuthHeaders(request: NextRequest, body?: any) {
-  let token = request.cookies.get('token')?.value;
+function getAuthHeaders(request: NextRequest, body?: any): Record<string, string> {
+  let token: string | undefined = request.cookies.get('token')?.value;
   if (!token && body?.token) token = body.token;
   if (!token) {
     const authHeader = request.headers.get('authorization');
@@ -17,13 +17,13 @@ function getAuthHeaders(request: NextRequest, body?: any) {
 }
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
     const headers = getAuthHeaders(request);
-    const res = await fetch(`${API_URL}/hotels/${id}/rooms`, { headers });
+    const res = await fetch(`${API_URL}/hotels/${id}/rooms`, { headers: headers as any });
     
     if (!res.ok) {
       return NextResponse.json([], { status: res.status });
@@ -47,7 +47,7 @@ export async function POST(
     
     const res = await fetch(`${API_URL}/hotels/${id}/rooms`, {
       method: 'POST',
-      headers,
+      headers: headers as any,
       body: JSON.stringify(body),
     });
     
